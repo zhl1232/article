@@ -27,25 +27,25 @@
   </div>
 </template>
 <script>
-import Axios from "axios";
+import Axios from 'axios';
 
 export default {
   data() {
     return {
       form: {
-        mobile: "13834453058",
-        pwd: "123456"
+        mobile: '13834453058',
+        pwd: '123456'
       }
     };
   },
   methods: {
     onSubmit() {
-      Axios.post("http://www.ftusix.com/static/data/login.php", {
+      Axios.post('http://www.ftusix.com/static/data/login.php', {
         mobile: this.form.mobile,
         pwd: this.form.pwd
       }).then(res => {
         let data = res.data;
-        console.log(data)
+        console.log(data);
         if (data.status === 0) {
           this.$message.error({
             showClose: true,
@@ -54,20 +54,19 @@ export default {
         } else if (data.status === 1) {
           this.$message({
             showClose: true,
-            message: "登录成功",
-            type: "success"
+            message: '登录成功',
+            type: 'success'
           });
-          this.$store.commit("SET_USER", data.data);
+          this.$store.commit('SET_USER', data.data);
 
-          sessionStorage.setItem("user", JSON.stringify(data.data));
+          sessionStorage.setItem('user', JSON.stringify(data.data));
 
           this.$router.push({
-            path: "user/userinfo"
+            path: '/index'
           });
         }
       });
-    },
-   
+    }
   }
 };
 </script>

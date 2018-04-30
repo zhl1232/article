@@ -30,31 +30,30 @@
 
 <script>
 var pwdReg = /^[0-9a-zA-Z]{6}/;
-import Axios from "axios";
-import state from "../../store/state";
-import { parseCode } from "../../../static/parseCodeToJSON";
+import Axios from 'axios';
+import state from '../../store/state';
 
 export default {
   data() {
     //密码验证方法
     var checkPwd = (rule, value, callback) => {
-      if (value === "") {
-        callback(new Error("请输入密码"));
+      if (value === '') {
+        callback(new Error('请输入密码'));
       } else {
         if (value.length < 6) {
-          callback(new Error("密码不能少于6位"));
+          callback(new Error('密码不能少于6位'));
         } else if (!pwdReg.test(value)) {
-          callback(new Error("密码请使用字母和数字"));
+          callback(new Error('密码请使用字母和数字'));
         }
         callback();
       }
     };
     //重复密码验证方法
     var checkRePwd = (rule, value, callback) => {
-      if (value === "") {
-        callback(new Error("请再次输入密码"));
+      if (value === '') {
+        callback(new Error('请再次输入密码'));
       } else if (value !== this.ruleForm2.pwd) {
-        callback(new Error("两次输入密码不一致!"));
+        callback(new Error('两次输入密码不一致!'));
       } else {
         callback();
       }
@@ -62,14 +61,14 @@ export default {
     return {
       ruleForm2: {
         mobile: state.user[0].mobile,
-        pwd: "",
-        rePwd: "",
-        sms_code: ""
+        pwd: '',
+        rePwd: '',
+        sms_code: ''
       },
       //失去焦点,调用方法验证
       rules2: {
-        pwd: [{ validator: checkPwd, trigger: "blur" }],
-        rePwd: [{ validator: checkRePwd, trigger: "blur" }]
+        pwd: [{ validator: checkPwd, trigger: 'blur' }],
+        rePwd: [{ validator: checkRePwd, trigger: 'blur' }]
       }
     };
   },
@@ -79,7 +78,7 @@ export default {
       this.$refs[formName].validate(valid => {
         //如果正确,post注册请求
         if (valid) {
-          Axios.post("http://www.ftusix.com/static/data/reset.php", {
+          Axios.post('http://www.ftusix.com/static/data/reset.php', {
             mobile: this.ruleForm2.mobile, //  手机号
             pwd: this.ruleForm2.pwd, //  新密码
             pwd2: this.ruleForm2.rePwd, //  确认密码
@@ -87,13 +86,13 @@ export default {
           })
             .then(response => {
               let data = response.data;
-              console.log(data)
+              console.log(data);
               //修改成功
               if (data.status === 1) {
                 this.$message({
                   showClose: true,
-                  message: "修改成功",
-                  type: "success"
+                  message: '修改成功',
+                  type: 'success'
                 });
               } else if (data.status === 0) {
                 //修改失败
@@ -107,7 +106,7 @@ export default {
               console.log(error);
             });
         } else {
-          console.log("error submit!!");
+          console.log('error submit!!');
           return false;
         }
       });
@@ -116,23 +115,22 @@ export default {
       let t = 60;
       let button = event.target;
       //event.target有可能是文字,event.target不是按钮时不能设置按钮禁用
-      button = document.getElementById("smsBut");
+      button = document.getElementById('smsBut');
 
-      Axios.post("http://www.ftusix.com/static/data/sendsms.php", {
+      Axios.post('http://www.ftusix.com/static/data/sendsms.php', {
         mobile: this.ruleForm2.mobile
       })
         .then(res => {
           let data = res.data;
           //获取成功
           if (data.status === 1) {
-            
             this.ruleForm2.sms_code = data.data.code;
             button.disabled = true;
             button.innerText = `${t--}秒后重新获取`;
             let timer = setInterval(() => {
               if (t === 0) {
                 clearInterval(timer);
-                button.innerText = "获取验证码";
+                button.innerText = '获取验证码';
                 button.disabled = false;
               } else {
                 button.innerText = `${t--}秒后重新获取`;
@@ -154,7 +152,7 @@ export default {
   },
   computed: {
     myInfo() {
-      return JSON.parse(sessionStorage.getItem("user"));
+      return JSON.parse(sessionStorage.getItem('user'));
     }
   }
 };

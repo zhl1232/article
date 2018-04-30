@@ -37,53 +37,51 @@
 </template>
 
 <script>
-import Axios from 'axios'
-  export default {
-    data() {
-      return {
-        tableData: []
-      }
+import Axios from 'axios';
+export default {
+  data() {
+    return {
+      tableData: []
+    };
+  },
+  created() {
+    this.getList();
+  },
+  methods: {
+    getList() {
+      Axios.get('http://www.ftusix.com/static/data/topicList.php', {
+        params: {
+          type: 1,
+          sort: 'hot',
+          page: 1,
+          index: true
+        }
+      }).then(res => {
+        let data = res.data;
+        if (data.status === 1) {
+          this.tableData = data.data;
+        }
+      });
     },
-    created() {
-      this.getList();
-    },
-    methods: {
-      getList() {
-        Axios.get("http://www.ftusix.com/static/data/topicList.php", {       
-          params: {
-            "type": 1,
-            "sort": "hot",
-            "page": 1,
-            "index": true
-          }
-        })
-        .then(res => {
-          let data = res.data;
-          if ( data.status === 1 ) {       
-            this.tableData = data.data;           
-          }
-        });
-      },
-      content(event) {
-        Axios.get("http://www.ftusix.com/static/data/content.php", {       
-          params: {
-            "user_id": event.user_id,
-            "topic_id": event.topic_id
-          }
-        })
-        .then(res => {          
-          let data = res.data;
-          if ( data.status === 1 ) {
-            console.log(data)
-            this.$store.commit("SET_ARTICLE", data);    
-            this.$router.push({
-              path: "/article/" + res.data.data.topic_id
-            });           
-          }
-        });
-      }
+    content(event) {
+      Axios.get('http://www.ftusix.com/static/data/content.php', {
+        params: {
+          user_id: event.user_id,
+          topic_id: event.topic_id
+        }
+      }).then(res => {
+        let data = res.data;
+        if (data.status === 1) {
+          console.log(data);
+          this.$store.commit('SET_ARTICLE', data);
+          this.$router.push({
+            path: '/article/' + res.data.data.topic_id
+          });
+        }
+      });
     }
   }
+};
 </script>
 
 <style >
@@ -93,7 +91,8 @@ import Axios from 'axios'
   width: 800px;
 } */
 .icon {
-  width: 1em; height: 1em;
+  width: 1em;
+  height: 1em;
   vertical-align: -0.15em;
   fill: currentColor;
   overflow: hidden;

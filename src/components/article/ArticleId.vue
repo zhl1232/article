@@ -39,6 +39,7 @@
     :data="tableData"
     style="width: 100%"
     :show-header="false"
+    @row-click="content($event)"
     >
       <el-table-column prop="nick_name">
       </el-table-column>
@@ -55,7 +56,7 @@
 
 <script>
 import state from '../../store/state';
-import Axios from 'axios'
+import Axios from 'axios';
 
 export default {
   data() {
@@ -65,8 +66,7 @@ export default {
       iscoll: state.article.iscoll,
       input: '',
       tableData: []
-    }
-
+    };
   },
   created() {
     this.getCommentList();
@@ -75,68 +75,81 @@ export default {
     collect() {
       this.iscoll = this.iscoll ? false : true;
       if (this.iscoll) {
-        Axios.post("http://www.ftusix.com/static/data/zan.php",{
-          "user_id": state.user[0].user_id,
-          "topic_id": this.data.topic_id,
-          "type": "coll"
-        })
-        .then( res => {
+        Axios.post('http://www.ftusix.com/static/data/zan.php', {
+          user_id: state.user[0].user_id,
+          topic_id: this.data.topic_id,
+          type: 'coll'
+        }).then(res => {
           let data = res.data;
-          if ( data.status !== 1 ) {
+          if (data.status !== 1) {
             this.$message.error({
               showClose: true,
               message: data.info
             });
           }
-        })       
-      }    
+        });
+      }
     },
     like() {
       this.iszan = this.iszan ? false : true;
       if (this.iszan) {
-        Axios.post("http://www.ftusix.com/static/data/zan.php",{
-          "user_id": state.user[0].user_id,
-          "topic_id": this.data.topic_id,
-          "type": "zan"
-        })
-        .then( res => {
+        Axios.post('http://www.ftusix.com/static/data/zan.php', {
+          user_id: state.user[0].user_id,
+          topic_id: this.data.topic_id,
+          type: 'zan'
+        }).then(res => {
           let data = res.data;
-          if ( data.status !== 1 ) {
+          if (data.status !== 1) {
             this.$message.error({
               showClose: true,
               message: data.info
             });
           }
-        })       
-      } 
+        });
+      }
     },
     comment() {
-      Axios.post("http://www.ftusix.com/static/data/comment.php",{
-        "user_id": state.user[0].user_id,
-        "topic_id": this.data.topic_id,
-        "comment": this.input
-      })
-      .then( res => {
+      Axios.post('http://www.ftusix.com/static/data/comment.php', {
+        user_id: state.user[0].user_id,
+        topic_id: this.data.topic_id,
+        comment: this.input
+      }).then(res => {
         let data = res.data;
-        if ( data.status === 1 ) {
+        if (data.status === 1) {
           this.getCommentList();
           this.input = '';
         }
-      })  
+      });
     },
     getCommentList() {
-      Axios.get("http://www.ftusix.com/static/data/commentList.php",{
+      Axios.get('http://www.ftusix.com/static/data/commentList.php', {
         params: {
-          "topic_id": this.data.topic_id,
-        }       
-      })
-      .then( res => {
+          topic_id: this.data.topic_id
+        }
+      }).then(res => {
         let data = res.data;
-        console.log(data)
-        if ( data.status === 1 ) {         
+        console.log(data);
+        if (data.status === 1) {
           this.tableData = data.data;
         }
-      }) 
+      });
+    },
+    content(event) {
+      Axios.get('http://www.ftusix.com/static/data/content.php', {
+        params: {
+          user_id: event.user_id,
+          topic_id: event.topic_id
+        }
+      }).then(res => {
+        let data = res.data;
+        if (data.status === 1) {
+          console.log(data);
+          this.$store.commit('SET_ARTICLE', data);
+          this.$router.push({
+            path: '/article/' + res.data.data.topic_id
+          });
+        }
+      });
     }
   }
 };
@@ -155,12 +168,13 @@ export default {
   width: 100%;
 }
 #articleid .icon {
-   width: 1em; height: 1em;
-   vertical-align: -0.15em;
-   fill: currentColor;
-   overflow: hidden;
-   font-size: 25px;
-   color: #f00;
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.15em;
+  fill: currentColor;
+  overflow: hidden;
+  font-size: 25px;
+  color: #f00;
 }
 #articleid .number {
   width: 200px;
@@ -168,7 +182,7 @@ export default {
   line-height: 40px;
   padding-top: 5px;
   border-radius: 15px;
-  border: 1px solid #f00; 
+  border: 1px solid #f00;
   color: #f00;
 }
 #articleid .number span {

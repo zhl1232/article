@@ -52,30 +52,28 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from "vuex";
+import { mapGetters, mapMutations } from 'vuex';
 import state from '../store/state';
-
 
 export default {
   methods: {
     outLogin() {
-      this.$store.commit("CLEAR_USER");
+      this.$store.commit('CLEAR_USER');
       this.$router.push({
-        path: "/login"
+        path: '/login'
       });
     }
   },
   computed: {
     ...mapGetters({
-      myLinks: "myLinks",
-      user: "user"
+      myLinks: 'myLinks',
+      user: 'user'
     }),
     isLogin() {
       return this.user[0];
     }
   }
 };
-
 </script>
 
 

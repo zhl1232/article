@@ -1,7 +1,6 @@
 <template>
   <div id="mynote">
     我的帖子
-    <span @click="add">123</span>
     <hr>
     <!-- <button @click="getList">123</button> -->
     <el-table
@@ -55,67 +54,37 @@
   </div>
 </template>
 <script>
-import Axios from "axios";
-import state from "../../store/state";
+import Axios from 'axios';
+import state from '../../store/state';
 
 export default {
   data() {
     return {
       tableData: []
-    }
+    };
   },
   created() {
     //获取文章列表
     this.getList();
-
-      
   },
   compumted: {
     myInfo() {
-      return JSON.parse(sessionStorage.getItem("user"));
-    },
-    
+      return JSON.parse(sessionStorage.getItem('user'));
+    }
   },
   methods: {
-    add() {
-      Axios.post("http://www.ftusix.com/static/data/writeArticle.php", {
-        
-        "content":'hello world',                                    //  话题内容html
-        "md_content":'hello world',                                    //  话题内容md
-        "user_id": state.user[0].user_id,                                   //  用户id
-        "nickname": state.user[0].nick_name,                                           //  昵称,
-        "token": state.user[0].token,                                                  //  token
-        "type": 1,                                                //  一级分类 0.全部 1.经验分享 2.入门学习 3.成果分享,
-        "tech_type": 1,                                             //  技术分类 1.html 2.php 3.java 类型暂时未定
-        "title":  "test",                                                 //  标题
-        "$isEdit": false,     //是否为编辑状态
-        "topic_id": ""              //如果为编辑状态则加上文章id
-      })
-      .then( res => {
-        
-        let data = res.data;
-        console.log(data)
-        if ( data.status === 1 ) {
-          this.$message.success({
-            showClose: true,
-            message: data.info
-          });
-        }
-      });
-    },
     handleEdit(index, row) {
       console.log(index, row);
     },
     //删除文章
     handleDelete(row) {
-      Axios.post("http://www.ftusix.com/static/data/delete.php", {       
-        "user_id": state.user[0].user_id,                                   //  用户id
-        "topic_id": row.topic_id              //如果为编辑状态则加上文章id
-      })
-      .then(res => {
+      Axios.post('http://www.ftusix.com/static/data/delete.php', {
+        user_id: state.user[0].user_id, //  用户id
+        topic_id: row.topic_id //如果为编辑状态则加上文章id
+      }).then(res => {
         let data = res.data;
-        console.log(data)
-        if ( data.status === 1 ) {
+        console.log(data);
+        if (data.status === 1) {
           this.getList();
           this.$message.success({
             showClose: true,
@@ -126,27 +95,26 @@ export default {
     },
     //获取文章列表函数
     getList() {
-      Axios.get("http://www.ftusix.com/static/data/myNote.php", {
+      Axios.get('http://www.ftusix.com/static/data/myNote.php', {
         params: {
-          "user_id": state.user[0].user_id,
-          "page": 1
+          user_id: state.user[0].user_id,
+          page: 1
         }
-      })
-      .then(res => {
+      }).then(res => {
         let data = res.data;
-        if ( data.status === 1 ) {       
+        if (data.status === 1) {
           this.tableData = data.data;
           for (let i = 0; i < this.tableData.length; i++) {
-            // this.tableData[i].type = 
+            // this.tableData[i].type =
             const time = new Date(this.tableData[i].modify_time * 1000);
-            
+
             this.tableData[i].modify_time = time;
             // console.log(this.tableData[i].modify_time)
           }
         }
       });
-    },
-    // timetrans(date) {      
+    }
+    // timetrans(date) {
     //   var Y = date.getFullYear() + '-';
     //   var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
     //   var D = (date.getDate() < 10 ? '0' + (date.getDate()) : date.getDate()) + ' ';
@@ -155,12 +123,7 @@ export default {
     //   var s = (date.getSeconds() <10 ? '0' + date.getSeconds() : date.getSeconds());
     //   return Y+M+D+h+m+s;
     // }
-    
-
-  },
-  
-    
-  
+  }
 };
 </script>
 
@@ -189,10 +152,10 @@ export default {
 #mynote hr {
   margin-top: 40px;
 }
-.el-table th>.cell {
+.el-table th > .cell {
   text-align: center;
 }
-.el-table th:nth-child(1)>.cell {
+.el-table th:nth-child(1) > .cell {
   text-align: left;
 }
 </style>

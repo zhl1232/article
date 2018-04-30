@@ -7,13 +7,13 @@
 </template>
 
 <script>
-import Nav from './components/Nav.vue'
+import Nav from './components/Nav.vue';
 export default {
   name: 'App',
   components: {
     'my-nav': Nav
   }
-}
+};
 </script>
 
 <style scoped>
@@ -23,6 +23,5 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  
 }
 </style>

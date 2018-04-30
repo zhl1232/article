@@ -26,16 +26,16 @@
     </div>
     <div class="item">
       <h4>性别</h4>
-      <el-radio v-model="sex" label='1'>男</el-radio>
-      <el-radio v-model="sex" label='2'>女</el-radio>
+      <el-radio v-model="sex" label="1">男</el-radio>
+      <el-radio v-model="sex" label="2">女</el-radio>
     </div>
     <br>
-    <el-button type='primary' @click='changeInfo' class='btn'>提交</el-button>
+    <el-button type="primary" @click="changeInfo" class="btn">提交</el-button>
   </div>
 </template>
 
 <script>
-import state from "../../store/state";
+import state from '../../store/state';
 import Axios from 'axios';
 export default {
   data() {
@@ -45,12 +45,12 @@ export default {
       token: state.user[0].token,
       nick_name: state.user[0].nick_name,
       avatar: state.user[0].avatar,
-      sex: state.user[0].sex + "" //默认label要匹配字符串,API返回数值
+      sex: state.user[0].sex + '' //默认label要匹配字符串,API返回数值
     };
   },
   computed: {
     myInfo() {
-      return JSON.parse(sessionStorage.getItem("user"));
+      return JSON.parse(sessionStorage.getItem('user'));
     }
   },
 
@@ -60,39 +60,36 @@ export default {
       state.user.avatar = this.avatar;
     },
     beforeAvatarUpload(file) {
-      const isJPG = file.type === "image/jpeg";
+      const isJPG = file.type === 'image/jpeg';
       const isLt2M = file.size / 1024 / 1024 < 2;
 
       if (!isJPG) {
-        this.$message.error("上传头像图片只能是 JPG 格式!");
+        this.$message.error('上传头像图片只能是 JPG 格式!');
       }
       if (!isLt2M) {
-        this.$message.error("上传头像图片大小不能超过 2MB!");
+        this.$message.error('上传头像图片大小不能超过 2MB!');
       }
       return isJPG && isLt2M;
     },
     changeInfo() {
-      Axios.post("http://www.ftusix.com/static/data/update.php",{
+      Axios.post('http://www.ftusix.com/static/data/update.php', {
         sex: this.sex,
         nick_name: this.nick_name,
         token: this.token
-      })
-      .then( res => {
+      }).then(res => {
         let data = res.data;
-        console.log(data)
-        if ( data.status === 1 ) {        
-          this.$store.commit("SET_USER", data);
-          sessionStorage.setItem("user", JSON.stringify(data));
+        console.log(data);
+        if (data.status === 1) {
+          this.$store.commit('SET_USER', data);
+          sessionStorage.setItem('user', JSON.stringify(data));
 
           this.$message({
             showClose: true,
             message: data.info,
-            type: "success"
+            type: 'success'
           });
         }
-        
-      })
-      
+      });
     }
   }
 };

@@ -73,7 +73,7 @@ export default new Router({
     {
       path: '/article/:topic_id',
       component: ArticleId
-    },   
+    },
     {
       path: '/write',
       component: Write

@@ -52,35 +52,33 @@
   </div>
 </template>
 <script>
-import Axios from "axios";
-import state from "../../store/state";
+import Axios from 'axios';
+import state from '../../store/state';
 
 export default {
   data() {
     return {
       tableData: []
-    }
+    };
   },
   created() {
     //获取收藏列表
-    this.getList();    
+    this.getList();
   },
   compumted: {
     myInfo() {
-      return JSON.parse(sessionStorage.getItem("user"));
-    },
-    
+      return JSON.parse(sessionStorage.getItem('user'));
+    }
   },
-  methods: {   
+  methods: {
     //删除文章
     handleDelete(row) {
-      Axios.post("http://www.ftusix.com/static/data/delete.php", {       
-        "user_id": state.user[0].user_id,                                   //  用户id
-        "topic_id": row.topic_id              //如果为编辑状态则加上文章id
-      })
-      .then(res => {
+      Axios.post('http://www.ftusix.com/static/data/delete.php', {
+        user_id: state.user[0].user_id, //  用户id
+        topic_id: row.topic_id //如果为编辑状态则加上文章id
+      }).then(res => {
         let data = res.data;
-        if ( data.status === 1 ) {
+        if (data.status === 1) {
           this.getList();
           this.$message.success({
             showClose: true,
@@ -91,28 +89,27 @@ export default {
     },
     //获取收藏列表函数
     getList() {
-      Axios.get("http://www.ftusix.com/static/data/myColl.php", {
+      Axios.get('http://www.ftusix.com/static/data/myColl.php', {
         params: {
-          "user_id": state.user[0].user_id,
-          "page": 1
+          user_id: state.user[0].user_id,
+          page: 1
         }
-      })
-      .then( res => {
+      }).then(res => {
         let data = res.data;
-        console.log(res)
-        if ( data.status === 1 ) {       
+        console.log(res);
+        if (data.status === 1) {
           this.tableData = data.data;
           for (let i = 0; i < this.tableData.length; i++) {
-            // this.tableData[i].type = 
+            // this.tableData[i].type =
             const time = new Date(this.tableData[i].modify_time * 1000);
-            
+
             this.tableData[i].modify_time = time;
             // console.log(this.tableData[i].modify_time)
           }
         }
       });
-    },
-  },
+    }
+  }
 };
 </script>
 
@@ -141,10 +138,10 @@ export default {
 #mycollection hr {
   margin-top: 40px;
 }
-.el-table th>.cell {
+.el-table th > .cell {
   text-align: center;
 }
-.el-table th:nth-child(1)>.cell {
+.el-table th:nth-child(1) > .cell {
   text-align: left;
 }
 </style>

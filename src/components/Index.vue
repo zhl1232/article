@@ -16,24 +16,25 @@
     <el-tab-pane label="javascript" name="third">
       <jsArticle></jsArticle>
     </el-tab-pane>
+    <el-tab-pane label="vue" name="third">
+      <jsArticle></jsArticle>
+    </el-tab-pane>
   </el-tabs>
   </div>
 </template>
 <script>
-import hotArticle from "../components/article/HotArticle";
+import hotArticle from '../components/article/HotArticle';
 import htmlArticle from '../components/article/Html';
 import jsArticle from '../components/article/JS';
 
 export default {
   data() {
     return {
-      activeName: "second"
+      activeName: 'second'
     };
   },
   methods: {
-    handleClick(tab, event) {
-      
-    }
+    handleClick(tab, event) {}
   },
   components: {
     hotArticle: hotArticle,
