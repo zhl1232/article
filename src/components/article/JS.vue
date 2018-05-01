@@ -29,9 +29,9 @@
         <span>{{ scope.row.like_num }}</span>
       </template>
     </el-table-column>
-    
-  </el-table>
 
+  </el-table>
+  
 
 </template>
 
@@ -57,7 +57,7 @@ export default {
         }
       }).then(res => {
         let data = res.data;
-        console.log(data);
+        console.log(res)
         if (data.status === 1) {
           this.tableData = data.data;
         }

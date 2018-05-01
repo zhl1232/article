@@ -1,37 +1,46 @@
 <template>
-  <el-table
-    :data="tableData"
-    style="width: 100%"
-    id="topic"
-    :show-header="false"
-    @row-click="content($event)"
-    >
-    <el-table-column
-      prop="title">
-    </el-table-column>
-    <el-table-column
-      prop="comment_num"
-      width="70px">
-      <template slot-scope="scope">
-        <svg class="icon" aria-hidden="true">
-          <use xlink:href="#icon-comments"></use>
-        </svg>
-        <span>{{ scope.row.comment_num }}</span>
-      </template>
-    </el-table-column>
-    <el-table-column
-      prop="like_num"
-      width="50px">
-      <template slot-scope="scope">
-        <svg class="icon" aria-hidden="true">
-          <use xlink:href="#icon-good"></use>
-        </svg>
-        <span>{{ scope.row.like_num }}</span>
-      </template>
-    </el-table-column>
-    
-  </el-table>
+  <div>
+    <el-table
+      :data="tableData"
+      style="width: 100%"
+      id="topic"
+      :show-header="false"
+      @row-click="content($event)"
+      >
+      <el-table-column
+        prop="title">
+      </el-table-column>
+      <el-table-column
+        prop="comment_num"
+        width="70px">
+        <template slot-scope="scope">
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-comments"></use>
+          </svg>
+          <span>{{ scope.row.comment_num }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="like_num"
+        width="50px">
+        <template slot-scope="scope">
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-good"></use>
+          </svg>
+          <span>{{ scope.row.like_num }}</span>
+        </template>
+      </el-table-column>
+      
+      
+    </el-table>
 
+    <el-pagination
+      layout="total, prev, pager, next"
+      :total="listCount"
+      :current-page="currentPage"
+      @current-change="handleCurrentChange">
+    </el-pagination>
+  </div>
 
 </template>
 
@@ -40,24 +49,25 @@ import Axios from 'axios';
 export default {
   data() {
     return {
-      tableData: []
+      tableData: [],
+      listCount: 0,
+      currentPage: 1
     };
   },
   created() {
-    this.getList();
+    this.getList(this.currentPage);
   },
   methods: {
-    getList() {
-      Axios.get('http://www.ftusix.com/static/data/topicList.php', {
+    getList(page) {
+      Axios.get('http://www.ftusix.com/static/data/topicList.php?page=' + page , {
         params: {
           type: 0,
           sort: 'new',
-          page: 1,
-          index: true
+          index: false
         }
       }).then(res => {
         let data = res.data;
-        console.log(data);
+        this.listCount = Number(data.listCount[0]);
         if (data.status === 1) {
           this.tableData = data.data;
         }
@@ -72,24 +82,23 @@ export default {
       }).then(res => {
         let data = res.data;
         if (data.status === 1) {
-          console.log(data);
+          
           this.$store.commit('SET_ARTICLE', data);
           this.$router.push({
             path: '/article/' + res.data.data.topic_id
           });
         }
       });
+    },
+    handleCurrentChange(val) {
+      this.getList(val)
     }
   }
 };
 </script>
 
 <style >
-/* #topic {
-  position: relative;
-  display: inline-block;
-  width: 800px;
-} */
+
 .icon {
   width: 1em;
   height: 1em;
@@ -98,11 +107,7 @@ export default {
   overflow: hidden;
   color: #cc8565;
 }
-#topic tr {
-  border: 10px solid #000;
-  /* background: #e6dcdc; */
-}
-#topic tr .cell {
-  text-align: left;
+.el-table {
+  height: 550px;
 }
 </style>

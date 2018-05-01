@@ -1,39 +1,40 @@
 <template>
-  <el-table
-    :data="tableData"
-    style="width: 100%"
-    id="topic"
-    :show-header="false"
-    @row-click="content($event)"
-    >
+  <div id="htmlArticle">
+    <el-table
+      :data="tableData"
+      style="width: 100%"
+      id="topic"
+      :show-header="false"
+      @row-click="content($event)"
+      >
 
-    <el-table-column
-      prop="title">
-    </el-table-column>
-    <el-table-column
-      prop="comment_num"
-      width="70px">
-      <template slot-scope="scope">
-        <svg class="icon" aria-hidden="true">
-          <use xlink:href="#icon-comments"></use>
-        </svg>
-        <span>{{ scope.row.comment_num }}</span>
-      </template>
-    </el-table-column>
-    <el-table-column
-      prop="like_num"
-      width="50px">
-      <template slot-scope="scope">
-        <svg class="icon" aria-hidden="true">
-          <use xlink:href="#icon-good"></use>
-        </svg>
-        <span>{{ scope.row.like_num }}</span>
-      </template>
-    </el-table-column>
+      <el-table-column
+        prop="title">
+      </el-table-column>
+      <el-table-column
+        prop="comment_num"
+        width="70px">
+        <template slot-scope="scope">
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-comments"></use>
+          </svg>
+          <span>{{ scope.row.comment_num }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="like_num"
+        width="50px">
+        <template slot-scope="scope">
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-good"></use>
+          </svg>
+          <span>{{ scope.row.like_num }}</span>
+        </template>
+      </el-table-column>
+
     
-  </el-table>
-
-
+    </el-table>
+  </div>
 </template>
 
 <script>
@@ -53,11 +54,12 @@ export default {
         params: {
           type: 1,
           sort: 'hot',
-          page: 1,
+          page: null,
           index: true
         }
       }).then(res => {
         let data = res.data;
+        console.log(data)
         if (data.status === 1) {
           this.tableData = data.data;
         }
@@ -85,11 +87,7 @@ export default {
 </script>
 
 <style >
-/* #topic {
-  position: relative;
-  display: inline-block;
-  width: 800px;
-} */
+
 .icon {
   width: 1em;
   height: 1em;
@@ -98,12 +96,5 @@ export default {
   overflow: hidden;
   color: #cc8565;
 }
-#topic tr {
-  cursor: pointer;
-  /* border: 10px solid #000; */
-  /* background: #e6dcdc; */
-}
-#topic tr .cell {
-  text-align: left;
-}
+
 </style>

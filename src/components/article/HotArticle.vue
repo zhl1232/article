@@ -1,38 +1,44 @@
 <template>
-  <el-table
-    :data="tableData"
-    style="width: 100%"
-    id="topic"
-    :show-header="false"
-    @row-click="content($event)"
-    >
-    <el-table-column
-      prop="title">
-    </el-table-column>
-    <el-table-column
-      prop="comment_num"
-      width="70px">
-      <template slot-scope="scope">
-        <svg class="icon" aria-hidden="true">
-          <use xlink:href="#icon-comments"></use>
-        </svg>
-        <span>{{ scope.row.comment_num }}</span>
-      </template>
-    </el-table-column>
-    <el-table-column
-      prop="like_num"
-      width="50px">
-      <template slot-scope="scope">
-        <svg class="icon" aria-hidden="true">
-          <use xlink:href="#icon-good"></use>
-        </svg>
-        <span>{{ scope.row.like_num }}</span>
-      </template>
-    </el-table-column>
-    
-  </el-table>
-
-
+  <div>
+    <el-table
+      :data="tableData"
+      style="width: 100%"
+      id="topic"
+      :show-header="false"
+      @row-click="content($event)"
+      >
+      <el-table-column
+        prop="title">
+      </el-table-column>
+      <el-table-column
+        prop="comment_num"
+        width="70px">
+        <template slot-scope="scope">
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-comments"></use>
+          </svg>
+          <span>{{ scope.row.comment_num }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="like_num"
+        width="50px">
+        <template slot-scope="scope">
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-good"></use>
+          </svg>
+          <span>{{ scope.row.like_num }}</span>
+        </template>
+      </el-table-column>
+      
+    </el-table>
+    <el-pagination
+        layout="total, prev, pager, next"
+        :total="listCount"
+        :current-page="currentPage"
+        @current-change="handleCurrentChange">
+      </el-pagination>
+  </div>
 </template>
 
 <script>
@@ -40,23 +46,25 @@ import Axios from 'axios';
 export default {
   data() {
     return {
-      tableData: []
+      tableData: [],
+      listCount: 0,
+      currentPage: 1
     };
   },
   created() {
-    this.getList();
+    this.getList(this.currentPage);
   },
   methods: {
-    getList() {
-      Axios.get('http://www.ftusix.com/static/data/topicList.php', {
+    getList(page) {
+      Axios.get('http://www.ftusix.com/static/data/topicList.php?page=' + page , {
         params: {
           type: 0,
           sort: 'hot',
-          page: 1,
-          index: true
+          index: false
         }
       }).then(res => {
         let data = res.data;
+        this.listCount = Number(data.listCount[0]);
         if (data.status === 1) {
           this.tableData = data.data;
         }
@@ -78,6 +86,9 @@ export default {
           });
         }
       });
+    },
+    handleCurrentChange(val) {
+      this.getList(val)
     }
   }
 };
