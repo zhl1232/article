@@ -58,6 +58,7 @@ export default {
     this.getList(this.currentPage);
   },
   methods: {
+    //获取文章列表
     getList(page) {
       Axios.get('http://www.ftusix.com/static/data/topicList.php?page=' + page , {
         params: {
@@ -73,6 +74,7 @@ export default {
         }
       });
     },
+    //文章详情
     content(event) {
       Axios.get('http://www.ftusix.com/static/data/content.php', {
         params: {
@@ -82,7 +84,6 @@ export default {
       }).then(res => {
         let data = res.data;
         if (data.status === 1) {
-          
           this.$store.commit('SET_ARTICLE', data);
           this.$router.push({
             path: '/article/' + res.data.data.topic_id
@@ -90,6 +91,7 @@ export default {
         }
       });
     },
+    //换页
     handleCurrentChange(val) {
       this.getList(val)
     }

@@ -55,7 +55,7 @@
 
 <script>
 import Axios from 'axios';
-import { parseCode } from '../../static/parseCodeToJSON';
+
 var mobileReg = /^1[34578]\d{9}$/;
 var pwdReg = /^[0-9a-zA-Z]{6}/;
 export default {

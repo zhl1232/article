@@ -8,6 +8,7 @@ import Article from '../components/Article'
 import Write from '../components/Write'
 import Register from '../components/register'
 import Login from '../components/Login'
+
 //
 import UserInfo from '../components/user/UserInfo'
 import Resetpwd from '../components/user/Resetpwd'
@@ -16,11 +17,10 @@ import MyCollection from '../components/user/MyCollection'
 import MyInfo from '../components/user/MyInfo'
 import MyTask from '../components/user/MyTask'
 
-import ArticleId from '../components/article/ArticleId'
-
+import ArticleContent from '../components/article/ArticleContent'
 Vue.use(Router)
 
-export default new Router({
+const router =  new Router({
   routes: [
 
     {
@@ -34,31 +34,47 @@ export default new Router({
     {
       path: '/user/',
       component: User,
+      meta: {
+        requireAuth: true
+      },
 
       children: [
         {
           path: 'userinfo',
-          component: UserInfo
+          component: UserInfo,
+          meta: {
+            requireAuth: true
+          },
         },
         {
           path: 'resetpwd',
-          component: Resetpwd
+          component: Resetpwd, meta: {
+            requireAuth: true
+          },
         },
         {
           path: 'mynote',
-          component: MyNote
+          component: MyNote, meta: {
+            requireAuth: true
+          },
         },
         {
           path: 'mycollection',
-          component: MyCollection
+          component: MyCollection, meta: {
+            requireAuth: true
+          },
         },
         {
           path: 'myinfo',
-          component: MyInfo
+          component: MyInfo, meta: {
+            requireAuth: true
+          },
         },
         {
           path: 'mytask',
-          component: MyTask
+          component: MyTask, meta: {
+            requireAuth: true
+          },
         }
       ]
     },
@@ -72,11 +88,21 @@ export default new Router({
     },
     {
       path: '/article/:topic_id',
-      component: ArticleId
+      component: ArticleContent
     },
     {
       path: '/write',
-      component: Write
+      component: Write,
+      meta: {
+        requireAuth: true
+      },
+    },
+    {
+      path: '/write/:topic_id',
+      component: Write,
+      meta: {
+        requireAuth: true
+      },
     },
     {
       path: '/register',
@@ -86,5 +112,36 @@ export default new Router({
       path: '/login',
       component: Login
     }
-  ]
+  ],
+  
 })
+
+
+router.beforeEach((to, from, next) => {
+  
+  //如果没有匹配到对应的路由页面
+  if (to.matched.length === 0) {
+    //如果上级未匹配到路由则跳转主页,如果能匹配就去来的页面
+    from.name ? next({ name: from.name }) : next('/index');
+  } else {
+    //如果路由有meta属性，代表必须先登陆再访问
+    if (to.matched.some(res => res.meta.requireAuth)) {
+      //判断session中是否有登陆信息
+      if (sessionStorage.getItem('user')) {
+        console.log(1)
+        next()
+      } else {
+        next({
+          path: '/login',
+          query: { redirect: to.fullPath }
+        })
+      }
+    } else {
+      //没有匹配
+      next()
+    }
+  }
+})
+
+
+export default router

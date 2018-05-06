@@ -2,9 +2,9 @@
   <div id="article">
     <ul class="type-list">
       <li><span></span>所有分类</li> 
-      <li><span></span>html</li> 
-      <li><span></span>javascript</li> 
-      <li><span></span>vue</li>
+      <li><span></span>经验分享</li> 
+      <li><span></span>入门学习</li> 
+      <li><span></span>成果分享</li>
     </ul>
 
     <el-radio-group v-model="sort" size="mini" fill="#f00" @change="change">

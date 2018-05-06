@@ -18,12 +18,22 @@
         >
         </el-input>
       </el-form-item>
-      <el-form-item>
+      <el-checkbox v-model="checked">下次自动登录</el-checkbox>
+
+      <router-link to="">
+        <a href="javascript:void(0)" class="forget">忘记密码</a>
+      </router-link>
+      <router-link to="/register">
+        <a href="javascript:void(0)" class="reg">立即注册</a>
+      </router-link>
+
+      <el-form-item class="login-btn">
         <el-button type="primary" @click="onSubmit">登录</el-button>
         <el-button>取消</el-button>
       </el-form-item>
+      
     </el-form>
- 
+
   </div>
 </template>
 <script>
@@ -32,9 +42,10 @@ import Axios from 'axios';
 export default {
   data() {
     return {
+      checked: false,
       form: {
-        mobile: '13834453058',
-        pwd: '123456'
+        mobile: '',
+        pwd: ''
       }
     };
   },
@@ -45,7 +56,6 @@ export default {
         pwd: this.form.pwd
       }).then(res => {
         let data = res.data;
-        console.log(data);
         if (data.status === 0) {
           this.$message.error({
             showClose: true,
@@ -58,8 +68,15 @@ export default {
             type: 'success'
           });
           this.$store.commit('SET_USER', data.data);
-
           sessionStorage.setItem('user', JSON.stringify(data.data));
+
+          let date = new Date();
+          if (this.checked) {
+            localStorage.setItem('time', date.setDate(date.getDate() + 7));
+            localStorage.setItem('user', JSON.stringify(data.data));
+            //保存到cookie
+            // setCookie('user',JSON.stringify(data.data),7)
+          }
 
           this.$router.push({
             path: '/index'
@@ -89,7 +106,7 @@ input {
   outline: none;
 }
 
-input:focus {
+#Login input:focus {
   border: 1px solid #f00;
 }
 #Login hr {
@@ -101,18 +118,35 @@ input:focus {
   background: #000;
 }
 
-.el-form-item__content {
+#Login .el-form-item__content {
   margin: auto;
   width: 400px;
 }
 
-.el-button--danger {
+#Login .el-button--danger {
   width: 140px;
   margin-top: 25px;
   font-size: 1.1em;
 }
-.el-button--danger span {
+#Login .el-button--danger span {
   margin-left: 15px;
   letter-spacing: 1.6em;
+}
+#Login a {
+  text-decoration: none;
+  font-size: 14px;
+  margin-left: 10px;
+}
+#Login .reg {
+  color: #f00;
+}
+#Login .forget {
+  color: #7e8c8d;
+}
+.login-btn {
+  margin: 20px 0;
+}
+#Login .el-checkbox {
+  margin-right: 80px;
 }
 </style>

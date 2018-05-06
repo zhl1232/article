@@ -59,7 +59,7 @@ export default {
         }
       }).then(res => {
         let data = res.data;
-        console.log(data)
+  
         if (data.status === 1) {
           this.tableData = data.data;
         }
@@ -74,7 +74,7 @@ export default {
       }).then(res => {
         let data = res.data;
         if (data.status === 1) {
-          console.log(data);
+     
           this.$store.commit('SET_ARTICLE', data);
           this.$router.push({
             path: '/article/' + res.data.data.topic_id

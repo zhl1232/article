@@ -1,10 +1,17 @@
 <template>
-  <div id="articleid">
-    {{data.title}}
-    {{data.nick_name}}
-    {{data.modify_time}}
+  <div id="articleContent">
+    <div class="title">
+      {{data.title}}
+    </div>
+    <div class="nick-name">
+      {{data.nick_name}}
+    </div>
+    <div class="info">
+      {{data.modify_time | time1}}
     浏览{{data.browser_num}}
     评论{{data.comment_num}}
+    </div>
+    
 
     <span v-html="data.content">
     </span>
@@ -39,15 +46,23 @@
     :data="tableData"
     style="width: 100%"
     :show-header="false"
-    @row-click="content($event)"
+    :cell-style="cellStyle"
     >
-      <el-table-column prop="nick_name">
+      <!-- <el-table-column prop="avatar">
+      </el-table-column> -->
+
+      <el-table-column prop="nick_name" width="980">
+        <template slot-scope="scope">
+          <span>{{ scope.row.nick_name}}:</span>
+          <p>{{ scope.row.comment }}</p>
+        </template>
       </el-table-column>
 
-      <el-table-column prop="comment"> 
-      </el-table-column>
-
-      <el-table-column prop="date">  
+      <el-table-column prop="date" width="100">
+        <template slot-scope="scope">
+          {{scope.row.date | time}}
+        </template>
+          
       </el-table-column>
     </el-table>
   </div>
@@ -65,49 +80,50 @@ export default {
       iszan: state.article.iszan,
       iscoll: state.article.iscoll,
       input: '',
+      time: '',
       tableData: []
     };
   },
   created() {
     this.getCommentList();
+    
   },
   methods: {
+    //收藏
     collect() {
-      this.iscoll = this.iscoll ? false : true;
-      if (this.iscoll) {
-        Axios.post('http://www.ftusix.com/static/data/zan.php', {
-          user_id: state.user[0].user_id,
-          topic_id: this.data.topic_id,
-          type: 'coll'
-        }).then(res => {
-          let data = res.data;
-          if (data.status !== 1) {
-            this.$message.error({
-              showClose: true,
-              message: data.info
-            });
-          }
-        });
-      }
+      this.iscoll = this.iscoll ? false : true; 
+      Axios.post('http://www.ftusix.com/static/data/zan.php', {
+        user_id: state.user[0].user_id,
+        topic_id: this.data.topic_id,
+        type: 'coll'
+      }).then(res => {
+        let data = res.data;
+        if (data.status !== 1) {
+          this.$message.error({
+            showClose: true,
+            message: data.info
+          });
+        }
+      }) 
     },
+    //点赞
     like() {
-      this.iszan = this.iszan ? false : true;
-      if (this.iszan) {
-        Axios.post('http://www.ftusix.com/static/data/zan.php', {
-          user_id: state.user[0].user_id,
-          topic_id: this.data.topic_id,
-          type: 'zan'
-        }).then(res => {
-          let data = res.data;
-          if (data.status !== 1) {
-            this.$message.error({
-              showClose: true,
-              message: data.info
-            });
-          }
-        });
-      }
+      this.iszan = this.iszan ? false : true; 
+      Axios.post('http://www.ftusix.com/static/data/zan.php', {
+        user_id: state.user[0].user_id,
+        topic_id: this.data.topic_id,
+        type: 'zan'
+      }).then(res => {
+        let data = res.data;
+        if (data.status !== 1) {
+          this.$message.error({
+            showClose: true,
+            message: data.info
+          });
+        }
+      });
     },
+    //评论
     comment() {
       Axios.post('http://www.ftusix.com/static/data/comment.php', {
         user_id: state.user[0].user_id,
@@ -121,6 +137,7 @@ export default {
         }
       });
     },
+    //评论列表
     getCommentList() {
       Axios.get('http://www.ftusix.com/static/data/commentList.php', {
         params: {
@@ -128,46 +145,28 @@ export default {
         }
       }).then(res => {
         let data = res.data;
-        console.log(data);
         if (data.status === 1) {
           this.tableData = data.data;
         }
       });
     },
-    content(event) {
-      Axios.get('http://www.ftusix.com/static/data/content.php', {
-        params: {
-          user_id: event.user_id,
-          topic_id: event.topic_id
-        }
-      }).then(res => {
-        let data = res.data;
-        if (data.status === 1) {
-          console.log(data);
-          this.$store.commit('SET_ARTICLE', data);
-          this.$router.push({
-            path: '/article/' + res.data.data.topic_id
-          });
-        }
-      });
+    cellStyle({row, column, rowIndex }) {
+      
     }
   }
 };
 </script>
 
-
-
-
 <style >
-#articleid {
+#articleContent {
   max-width: 1100px;
   margin: 20px auto;
 }
-#articleid hr {
+#articleContent hr {
   height: 1px;
   width: 100%;
 }
-#articleid .icon {
+#articleContent .icon {
   width: 1em;
   height: 1em;
   vertical-align: -0.15em;
@@ -176,7 +175,7 @@ export default {
   font-size: 25px;
   color: #f00;
 }
-#articleid .number {
+#articleContent .number {
   width: 200px;
   height: 40px;
   line-height: 40px;
@@ -185,24 +184,37 @@ export default {
   border: 1px solid #f00;
   color: #f00;
 }
-#articleid .number span {
+#articleContent .number span {
   display: inline-block;
   height: 30px;
   line-height: 30px;
   padding: 0 15px;
   cursor: pointer;
 }
-#articleid .collect {
+#articleContent .collect {
   border-right: 1px solid;
 }
-#articleid .el-textarea__inner {
+#articleContent .el-textarea__inner {
   margin-top: 20px;
   resize: none;
 }
 
-#articleid .el-button {
+#articleContent .el-button {
   margin-top: 20px;
   float: right;
+}
+#articleContent .title {
+  font-size: 28px;
+  margin: 10px;
+}
+#articleContent .nick-name,
+#articleContent .info {
+  font-size: 14px;
+  color: #ccc;
+}
+#articleContent tr {
+  text-align: left;
+  border-bottom: 1px solid #f00;
 }
 </style>
 

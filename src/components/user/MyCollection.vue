@@ -1,10 +1,12 @@
 <template>
   <div id="mycollection">
-    我的帖子
+    <span style="float:left">我的收藏</span> 
     <hr>
     <el-table
     :data="tableData"
-    style="width: 100%">
+    style="width: 100%"
+    height="760"
+     @row-click="content($event)">
       <el-table-column
         label="主题"
         width="300">
@@ -14,9 +16,9 @@
       </el-table-column>
       <el-table-column
         label="分类"
-        width="50">
+        width="90">
         <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ scope.row.type }}</span>      
+          <span style="margin-left: 10px">{{ scope.row.type | type }}</span>      
         </template>
       </el-table-column>
       <el-table-column
@@ -37,18 +39,24 @@
         label="发布时间"
         width="120">
         <template slot-scope="scope" >
-          <span>{{ scope.row.modify_time }}</span>
+          <span class="time" v-html="scope.row.modify_time"></span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="200">
+      <el-table-column label="操作" width="190">
         <template slot-scope="scope">
-          <el-button @click="handleDelete(scope.row)">
+          <el-button @click.stop="handleCancelColl(scope.row)">
             取消收藏
           </el-button>
         </template>
       </el-table-column>
     </el-table>
     <br>
+    <el-pagination
+      layout="total, prev, pager, next"
+      :total="listCount"
+      :current-page="currentPage"
+      @current-change="handleCurrentChange">
+    </el-pagination>
   </div>
 </template>
 <script>
@@ -58,12 +66,14 @@ import state from '../../store/state';
 export default {
   data() {
     return {
-      tableData: []
+      tableData: [],
+      listCount: 0,
+      currentPage: 1
     };
   },
   created() {
     //获取收藏列表
-    this.getList();
+    this.getList(this.currentPage);
   },
   compumted: {
     myInfo() {
@@ -71,43 +81,76 @@ export default {
     }
   },
   methods: {
-    //删除文章
-    handleDelete(row) {
-      Axios.post('http://www.ftusix.com/static/data/delete.php', {
-        user_id: state.user[0].user_id, //  用户id
-        topic_id: row.topic_id //如果为编辑状态则加上文章id
+    //取消收藏
+    handleCancelColl(row) {
+      Axios.post('http://www.ftusix.com/static/data/zan.php', {
+        user_id: state.user[0].user_id,
+        topic_id: row.topic_id,
+        type: 'coll'
       }).then(res => {
         let data = res.data;
         if (data.status === 1) {
-          this.getList();
-          this.$message.success({
+          this.getList(this.currentPage); 
+        } else {
+          this.$message.error({
             showClose: true,
             message: data.info
           });
         }
-      });
+      });   
     },
     //获取收藏列表函数
-    getList() {
-      Axios.get('http://www.ftusix.com/static/data/myColl.php', {
+    getList(page) {
+      Axios.get('http://www.ftusix.com/static/data/myColl.php?page=' + page, {
         params: {
-          user_id: state.user[0].user_id,
-          page: 1
+          user_id: state.user[0].user_id
         }
       }).then(res => {
         let data = res.data;
-        console.log(res);
+        console.log(data)
         if (data.status === 1) {
+          this.listCount = Number(data.commentList[0]);
+          console.log(this.listCount)
           this.tableData = data.data;
           for (let i = 0; i < this.tableData.length; i++) {
-            // this.tableData[i].type =
             const time = new Date(this.tableData[i].modify_time * 1000);
-
-            this.tableData[i].modify_time = time;
-            // console.log(this.tableData[i].modify_time)
+            const data = this.timetrans(time)
+            this.tableData[i].modify_time = data; 
           }
         }
       });
+    },
+    handleCurrentChange(val) {
+      this.getList(val)
+    },
+    //文章详情
+    content(event) {
+      console.log(event)
+      Axios.get('http://www.ftusix.com/static/data/content.php', {
+        params: {
+          user_id: state.user[0].user_id,
+          topic_id: event.topic_id
+        }
+      }).then(res => {
+        let data = res.data;
+        if (data.status === 1) {
+          
+          this.$store.commit('SET_ARTICLE', data);
+          this.$router.push({
+            path: '/article/' + res.data.data.topic_id
+          });
+        }
+      });
+    },
+    //时间戳转换函数
+    timetrans(date) {
+      var Y = date.getFullYear() + '-';
+      var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+      var D = (date.getDate() < 10 ? '0' + (date.getDate()) : date.getDate()) + '<br>' ;
+      var h = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':';
+      var m = (date.getMinutes() <10 ? '0' + date.getMinutes() : date.getMinutes()) + ':';
+      var s = (date.getSeconds() <10 ? '0' + date.getSeconds() : date.getSeconds());
+      return Y+M+D+h+m+s;
     }
   }
 };
@@ -122,13 +165,8 @@ export default {
   vertical-align: top;
   margin-top: 20px;
   margin-left: 20px;
-  text-align: left;
 }
-#mycollection ul {
-  position: absolute;
-  right: 80px;
-  width: 400px;
-}
+
 #mycollection li {
   float: left;
   list-style: none;
@@ -138,10 +176,21 @@ export default {
 #mycollection hr {
   margin-top: 40px;
 }
-.el-table th > .cell {
+#mycollection .el-table th > .cell {
   text-align: center;
 }
-.el-table th:nth-child(1) > .cell {
+#mycollection .el-table td:nth-child(1) > .cell {
   text-align: left;
+}
+#mycollection .el-pagination li {
+  margin: 0;
+}
+#mycollection .el-pagination {
+  display: inline-block;
+  text-align: center;
+}
+#mycollection .time {
+  display: block;
+  text-align: center;
 }
 </style>

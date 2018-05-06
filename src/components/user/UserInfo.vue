@@ -2,21 +2,19 @@
   <div id="userinfo">
     个人信息
     <hr>
-    <span>个性头像</span>
     <el-upload
-    class="avatar-uploader"
-    action="https://jsonplaceholder.typicode.com/posts/"
-    :show-file-list="false"
-    :on-success="handleAvatarSuccess"
-    :before-upload="beforeAvatarUpload"
-    >
-      <!-- <img v-if="avatar" :src="avatar" class="avatar"> 
-           返回头像地址无效,暂时写成静态地址
-      -->
-      <img v-if="avatar" src="../../assets/images/face.jpg" class="avatar">
-      <i v-else class="el-icon-plus avatar-uploader-icon">
-      </i>    
+      class="avatar-uploader"
+      action="http://www.ftusix.com/static/data/upload.php"
+      :show-file-list="false"
+      :on-success="handleAvatarSuccess"
+      :data="{id:this.user_id}"
+      :before-upload="beforeAvatarUpload">
+      <img v-if="avatar" 
+      :src="'http://www.ftusix.com/static/data/upload/'+avatar" 
+      class="avatar">
+      更换头像
     </el-upload>
+
     <div class="item">
        <h4>注册手机号</h4>{{mobile}}
     </div>
@@ -55,14 +53,16 @@ export default {
   },
 
   methods: {
-    handleAvatarSuccess(res, file) {
-      this.avatar = URL.createObjectURL(file.raw);
-      state.user.avatar = this.avatar;
+    handleAvatarSuccess(res,file) {
+      console.log(res)
+      // this.avatar = URL.createObjectURL(file.raw);
+      
+      
     },
     beforeAvatarUpload(file) {
+
       const isJPG = file.type === 'image/jpeg';
       const isLt2M = file.size / 1024 / 1024 < 2;
-
       if (!isJPG) {
         this.$message.error('上传头像图片只能是 JPG 格式!');
       }
@@ -78,7 +78,6 @@ export default {
         token: this.token
       }).then(res => {
         let data = res.data;
-        console.log(data);
         if (data.status === 1) {
           this.$store.commit('SET_USER', data);
           sessionStorage.setItem('user', JSON.stringify(data));
@@ -90,7 +89,7 @@ export default {
           });
         }
       });
-    }
+    },
   }
 };
 </script>

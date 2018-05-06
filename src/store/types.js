@@ -1,3 +1,5 @@
 export const SET_USER = 'SET_USER'
 export const CLEAR_USER = 'CLEAR_USER'
 export const SET_ARTICLE = 'SET_ARTICLE'
+export const CLEAR_ARTICLE = 'CLEAR_ARTICLE'
+export const ISEDIT = 'ISEDIT'

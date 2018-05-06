@@ -30,7 +30,8 @@
           <el-col :span="12" >
             <el-dropdown trigger="click" placement="top">
               <span class="el-dropdown-link">
-                <img src="../assets/images/face.jpg" alt="" style="width:50px">
+                <img :src="'http://www.ftusix.com/static/data/upload/'+avatar"
+                style="width:50px">
               </span>
               <el-dropdown-menu slot="dropdown" >
                 <el-dropdown-item v-for="item in myLinks" :key="item.index">
@@ -56,9 +57,12 @@ import { mapGetters, mapMutations } from 'vuex';
 import state from '../store/state';
 
 export default {
+
   methods: {
     outLogin() {
       this.$store.commit('CLEAR_USER');
+      localStorage.clear();
+      sessionStorage.clear();
       this.$router.push({
         path: '/login'
       });
@@ -71,6 +75,9 @@ export default {
     }),
     isLogin() {
       return this.user[0];
+    },
+    avatar() {
+      return state.user[0].avatar;
     }
   }
 };
