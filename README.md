@@ -4,8 +4,6 @@
 
 > 技术栈 vue2.x + vue-cli + vue-router + vuex + axios + (element-ui)
 
-> ps:感觉UI组件坑略多,还不如自己写..
-
 
 ## Build Setup
 
