@@ -1,6 +1,6 @@
 
 # article
-> A Vue.js project
+>一个文章发布系统,包括注册,登录,自动登录,修改个人信息,编辑发布文章.
 
 > 技术栈 vue2.x + vue-cli + vue-router + vuex + axios + (element-ui)
 
